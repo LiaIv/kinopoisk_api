@@ -1,0 +1,11 @@
+.movies-page__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+
+.movies-page__pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
