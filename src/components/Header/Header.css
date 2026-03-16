@@ -85,12 +85,24 @@
 @media (max-width: 768px) {
   .header__toolbar {
     flex-wrap: wrap;
+    justify-content: space-between;
     padding: 8px 0;
+  }
+
+  .header__logo {
+    order: 1;
+  }
+
+  .header__theme-btn {
+    margin-left: auto !important;
+    order: 2;
   }
 
   .header__nav {
     gap: 2px;
     order: 3;
+    justify-content: center;
+    margin-top: 8px;
     width: 100%;
   }
 
