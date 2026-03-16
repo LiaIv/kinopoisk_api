@@ -1,15 +1,14 @@
-const API_KEY = '8c8e1a50-6322-4135-8875-5d40a5420d86';
-const BASE_URL = 'https://kinopoiskapiunofficial.tech/api';
+import { KINOPOISK_API_KEY, KINOPOISK_BASE_URL } from '../config/kinopoisk';
 
 const headers = {
-  'X-API-KEY': API_KEY,
+  'X-API-KEY': KINOPOISK_API_KEY,
   'Content-Type': 'application/json',
 };
 
-export const getTopMovies = async (page = 1) => {
+export const getTopMovies = async (page = 1, options = {}) => {
   const response = await fetch(
-    `${BASE_URL}/v2.2/films/top?type=TOP_100_POPULAR_FILMS&page=${page}`,
-    { headers },
+    `${KINOPOISK_BASE_URL}/v2.2/films/top?type=TOP_100_POPULAR_FILMS&page=${page}`,
+    { headers, ...options },
   );
 
   if (!response.ok) {
@@ -24,10 +23,10 @@ export const getTopMovies = async (page = 1) => {
   };
 };
 
-export const searchMovies = async (keyword, page = 1) => {
+export const searchMovies = async (keyword, page = 1, options = {}) => {
   const response = await fetch(
-    `${BASE_URL}/v2.1/films/search-by-keyword?keyword=${encodeURIComponent(keyword)}&page=${page}`,
-    { headers },
+    `${KINOPOISK_BASE_URL}/v2.1/films/search-by-keyword?keyword=${encodeURIComponent(keyword)}&page=${page}`,
+    { headers, ...options },
   );
 
   if (!response.ok) {
@@ -37,34 +36,15 @@ export const searchMovies = async (keyword, page = 1) => {
   return response.json();
 };
 
-export const getMovieById = async (id) => {
-  const response = await fetch(`${BASE_URL}/v2.2/films/${id}`, { headers });
+export const getMovieById = async (id, options = {}) => {
+  const response = await fetch(`${KINOPOISK_BASE_URL}/v2.2/films/${id}`, {
+    headers,
+    ...options,
+  });
 
   if (!response.ok) {
     throw new Error('Ошибка загрузки информации о фильме');
   }
 
   return response.json();
-};
-
-export const enrichMoviesWithRatings = async (movies) => {
-  const promises = movies.map(async (movie) => {
-    if (movie.rating && movie.rating !== null) {
-      return movie;
-    }
-
-    const id = movie.kinopoiskId || movie.filmId;
-
-    try {
-      const details = await getMovieById(id);
-      return {
-        ...movie,
-        rating: details.ratingKinopoisk || details.ratingImdb || null,
-      };
-    } catch {
-      return movie;
-    }
-  });
-
-  return Promise.all(promises);
 };

@@ -1,10 +1,7 @@
-import { createContext, useState, useMemo, useContext, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-
-const ThemeToggleContext = createContext();
-
-export const useThemeToggle = () => useContext(ThemeToggleContext);
+import { ThemeToggleContext } from './ThemeToggleContext';
 
 export function AppThemeProvider({ children }) {
   const stored = localStorage.getItem('themeMode');
@@ -15,11 +12,11 @@ export function AppThemeProvider({ children }) {
     document.body.classList.add(`theme-${mode}`);
   }, [mode]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const next = mode === 'dark' ? 'light' : 'dark';
     setMode(next);
     localStorage.setItem('themeMode', next);
-  };
+  }, [mode]);
 
   const theme = useMemo(
     () =>
@@ -47,7 +44,7 @@ export function AppThemeProvider({ children }) {
     [mode],
   );
 
-  const value = useMemo(() => ({ mode, toggleTheme }), [mode]);
+  const value = useMemo(() => ({ mode, toggleTheme }), [mode, toggleTheme]);
 
   return (
     <ThemeToggleContext.Provider value={value}>

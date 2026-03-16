@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -13,8 +12,16 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { getMovieById } from '../../api/kinopoiskApi';
+import { useMovieDetails } from '../../hooks/useMovieDetails';
 import { addFavorite, removeFavorite } from '../../store/favoritesSlice';
+import {
+  getMovieId,
+  getMoviePoster,
+  getMovieRating,
+  getMovieTitle,
+  getMovieYear,
+  toFavoriteMovie,
+} from '../../utils/movieAdapter';
 import './MovieDetailPage.css';
 
 function MovieDetailPage() {
@@ -22,45 +29,16 @@ function MovieDetailPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites.items);
+  const movieId = Number(id);
+  const { movie, loading, error } = useMovieDetails(id);
 
-  const [movie, setMovie] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const isFavorite = favorites.some(
-    (item) => item.kinopoiskId === Number(id),
-  );
-
-  useEffect(() => {
-    const fetchMovie = async () => {
-      try {
-        setLoading(true);
-        const data = await getMovieById(id);
-        setMovie(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovie();
-  }, [id]);
+  const isFavorite = favorites.some((item) => getMovieId(item) === movieId);
 
   const handleToggleFavorite = () => {
     if (isFavorite) {
-      dispatch(removeFavorite(Number(id)));
+      dispatch(removeFavorite(movieId));
     } else {
-      dispatch(
-        addFavorite({
-          kinopoiskId: movie.kinopoiskId,
-          nameRu: movie.nameRu,
-          nameEn: movie.nameEn,
-          year: movie.year,
-          posterUrl: movie.posterUrl,
-          posterUrlPreview: movie.posterUrlPreview,
-        }),
-      );
+      dispatch(addFavorite(toFavoriteMovie(movie)));
     }
   };
 
@@ -80,18 +58,20 @@ function MovieDetailPage() {
     return <Alert severity="warning">Фильм не найден</Alert>;
   }
 
-  const title = movie.nameRu || movie.nameEn || 'Без названия';
-  const ratingValue = movie.ratingKinopoisk || 0;
+  const title = getMovieTitle(movie);
+  const year = getMovieYear(movie);
+  const poster = getMoviePoster(movie);
+  const ratingValue = Number(getMovieRating(movie)) || 0;
 
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
-        {title} ({movie.year})
+        {title} {year && `(${year})`}
       </Typography>
       <Box className="movie-detail__content">
         <img
           className="movie-detail__poster"
-          src={movie.posterUrl}
+          src={poster}
           alt={title}
         />
         <Box className="movie-detail__info">

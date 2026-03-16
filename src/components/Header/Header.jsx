@@ -9,10 +9,10 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material';
-import GraphicEqIcon from '@mui/icons-material/GraphicEq';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
-import { useThemeToggle } from '../../context/ThemeContext';
+import { useThemeToggle } from '../../context/useThemeToggle';
 import './Header.css';
 
 function Header() {
@@ -31,7 +31,7 @@ function Header() {
       <Container maxWidth="lg">
         <Toolbar className="header__toolbar" disableGutters>
           <NavLink to="/" className="header__logo">
-            <GraphicEqIcon fontSize="large" />
+            <VideoLibraryIcon fontSize="large" />
           </NavLink>
           <Box component="nav" className="header__nav">
             {navItems.map((item) => (

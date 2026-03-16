@@ -1,37 +1,12 @@
-import { useState, useEffect } from 'react';
 import { Typography, Box, Alert, Pagination } from '@mui/material';
-import { getTopMovies, enrichMoviesWithRatings } from '../../api/kinopoiskApi';
+import { useTopMovies } from '../../hooks/useTopMovies';
 import MovieCard from '../../components/MovieCard/MovieCard';
 import MovieCardSkeleton from '../../components/MovieCardSkeleton/MovieCardSkeleton';
+import { getMovieId } from '../../utils/movieAdapter';
 import './MoviesPage.css';
 
 function MoviesPage() {
-  const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await getTopMovies(page);
-        setMovies(data.items || []);
-        setTotalPages(data.totalPages || 1);
-
-        const enriched = await enrichMoviesWithRatings(data.items || []);
-        setMovies(enriched);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovies();
-  }, [page]);
+  const { movies, loading, error, page, setPage, totalPages } = useTopMovies();
 
   const handlePageChange = (_, value) => {
     setPage(value);
@@ -53,10 +28,7 @@ function MoviesPage() {
               <MovieCardSkeleton key={i} />
             ))
           : movies.map((movie) => (
-              <MovieCard
-                key={movie.kinopoiskId || movie.filmId}
-                movie={movie}
-              />
+              <MovieCard key={getMovieId(movie)} movie={movie} />
             ))}
       </Box>
       {!loading && totalPages > 1 && (

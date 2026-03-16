@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { Typography, Box } from '@mui/material';
 import MovieCard from '../../components/MovieCard/MovieCard';
+import { getMovieId } from '../../utils/movieAdapter';
 import './FavoritesPage.css';
 
 function FavoritesPage() {
@@ -19,7 +20,7 @@ function FavoritesPage() {
       ) : (
         <Box className="favorites-page__grid">
           {favorites.map((movie) => (
-            <MovieCard key={movie.kinopoiskId} movie={movie} />
+            <MovieCard key={getMovieId(movie)} movie={movie} />
           ))}
         </Box>
       )}

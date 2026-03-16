@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Typography,
   Box,
@@ -6,38 +5,17 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import { searchMovies } from '../../api/kinopoiskApi';
+import { useMovieSearch } from '../../hooks/useMovieSearch';
 import MovieCard from '../../components/MovieCard/MovieCard';
+import { getMovieId } from '../../utils/movieAdapter';
 import './SearchPage.css';
 
 function SearchPage() {
-  const [query, setQuery] = useState('');
-  const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [searched, setSearched] = useState(false);
+  const { query, setQuery, movies, loading, error, searched } =
+    useMovieSearch();
 
-  const handleSearch = async (event) => {
-    const value = event.target.value;
-    setQuery(value);
-
-    if (value.trim().length < 2) {
-      setMovies([]);
-      setSearched(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await searchMovies(value);
-      setMovies(data.films || []);
-      setSearched(true);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  const handleSearch = (event) => {
+    setQuery(event.target.value);
   };
 
   return (
@@ -67,10 +45,7 @@ function SearchPage() {
       )}
       <Box className="search-page__grid">
         {movies.map((movie) => (
-          <MovieCard
-            key={movie.kinopoiskId || movie.filmId}
-            movie={movie}
-          />
+          <MovieCard key={getMovieId(movie)} movie={movie} />
         ))}
       </Box>
     </Box>

@@ -1,20 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardMedia, CardContent, Typography, Box } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
+import { normalizeMovie } from '../../utils/movieAdapter';
 import './MovieCard.css';
 
 function MovieCard({ movie }) {
   const navigate = useNavigate();
-  const movieId = movie.kinopoiskId || movie.filmId;
-  const title = movie.nameRu || movie.nameEn || 'Без названия';
-  const year = movie.year || '';
-  const poster = movie.posterUrlPreview || movie.posterUrl;
-  const rawRating =
-    movie.ratingKinopoisk || movie.ratingImdb || movie.rating || null;
-  const hasRating = rawRating && rawRating !== 'null' && Number(rawRating) > 0;
+  const { id, title, year, poster, rating, hasRating } = normalizeMovie(movie);
 
   const handleClick = () => {
-    navigate(`/movie/${movieId}`);
+    navigate(`/movie/${id}`);
   };
 
   return (
@@ -30,7 +25,7 @@ function MovieCard({ movie }) {
           className={`movie-card__rating ${!hasRating ? 'movie-card__rating--none' : ''}`}
         >
           <StarIcon className="movie-card__star" />
-          {hasRating ? rawRating : 0}
+          {hasRating ? rating : 0}
         </Box>
         <Box className="movie-card__overlay">
           <Typography variant="body2" className="movie-card__overlay-text">
