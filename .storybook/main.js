@@ -10,6 +10,15 @@ const config = {
     name: '@storybook/react-vite',
     options: {},
   },
+  async viteFinal(config) {
+    return {
+      ...config,
+      build: {
+        ...config.build,
+        chunkSizeWarningLimit: 950,
+      },
+    };
+  },
 };
 
 export default config;
