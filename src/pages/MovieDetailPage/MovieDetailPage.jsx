@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -7,10 +8,13 @@ import {
   CircularProgress,
   Alert,
   Rating,
+  IconButton,
+  Skeleton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useMovieDetails } from '../../hooks/useMovieDetails';
 import { addFavorite, removeFavorite } from '../../store/favoritesSlice';
@@ -30,17 +34,79 @@ function MovieDetailPage() {
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites.items);
   const movieId = Number(id);
-  const { movie, loading, error } = useMovieDetails(id);
+  const { movie, actors, loading, error } = useMovieDetails(id);
+  const [isPosterLoading, setIsPosterLoading] = useState(true);
+  const [isFavoriteLocal, setIsFavoriteLocal] = useState(false);
+  const [isFavoriteAnimating, setIsFavoriteAnimating] = useState(false);
+  const shouldAnimateFavoriteRef = useRef(false);
+  const poster = getMoviePoster(movie);
+
+  useEffect(() => {
+    if (!poster) {
+      setIsPosterLoading(false);
+      return undefined;
+    }
+
+    let isActive = true;
+    const image = new Image();
+
+    setIsPosterLoading(true);
+
+    const handleComplete = () => {
+      if (isActive) {
+        setIsPosterLoading(false);
+      }
+    };
+
+    image.onload = handleComplete;
+    image.onerror = handleComplete;
+    image.src = poster;
+
+    if (image.complete) {
+      handleComplete();
+    }
+
+    return () => {
+      isActive = false;
+    };
+  }, [poster]);
 
   const isFavorite = favorites.some((item) => getMovieId(item) === movieId);
 
+  useEffect(() => {
+    setIsFavoriteLocal(isFavorite);
+  }, [isFavorite]);
+
   const handleToggleFavorite = () => {
-    if (isFavorite) {
+    const nextIsFavorite = !isFavoriteLocal;
+
+    shouldAnimateFavoriteRef.current = true;
+    setIsFavoriteLocal(nextIsFavorite);
+    setIsFavoriteAnimating(false);
+
+    if (isFavoriteLocal) {
       dispatch(removeFavorite(movieId));
     } else {
       dispatch(addFavorite(toFavoriteMovie(movie)));
     }
   };
+
+  useEffect(() => {
+    if (!movie || !shouldAnimateFavoriteRef.current) {
+      return undefined;
+    }
+
+    shouldAnimateFavoriteRef.current = false;
+    setIsFavoriteAnimating(true);
+
+    const timeoutId = window.setTimeout(() => {
+      setIsFavoriteAnimating(false);
+    }, 220);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isFavoriteLocal, movie]);
 
   if (loading) {
     return (
@@ -60,26 +126,72 @@ function MovieDetailPage() {
 
   const title = getMovieTitle(movie);
   const year = getMovieYear(movie);
-  const poster = getMoviePoster(movie);
   const ratingValue = Number(getMovieRating(movie)) || 0;
 
   return (
     <Box>
+      <Box className="movie-detail__back">
+        <IconButton
+          onClick={() => navigate(-1)}
+          className="movie-detail__back-btn"
+          aria-label="Назад"
+        >
+          <ArrowBackIcon />
+        </IconButton>
+      </Box>
       <Typography variant="h4" gutterBottom>
         {title} {year && `(${year})`}
       </Typography>
       <Box className="movie-detail__content">
-        <img
-          className="movie-detail__poster"
-          src={poster}
-          alt={title}
-        />
+        <Box className="movie-detail__poster-wrap">
+          {isPosterLoading && (
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              className="movie-detail__poster-skeleton"
+            />
+          )}
+          <img
+            className={`movie-detail__poster ${
+              !isPosterLoading ? 'movie-detail__poster--loaded' : ''
+            }`}
+            src={poster}
+            alt={title}
+          />
+          <IconButton
+            onClick={handleToggleFavorite}
+            className={`movie-detail__favorite-mobile ${
+              isFavoriteLocal ? 'movie-detail__favorite-mobile--active' : ''
+            } ${
+              isFavoriteAnimating ? 'movie-detail__favorite-mobile--animating' : ''
+            }`}
+            disableRipple
+            disableFocusRipple
+            aria-label={
+              isFavoriteLocal ? 'Удалить из избранного' : 'Добавить в избранное'
+            }
+          >
+            {isFavoriteLocal ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          </IconButton>
+        </Box>
         <Box className="movie-detail__info">
           <Typography variant="h6" gutterBottom>
             Описание
           </Typography>
           <Typography variant="body1" paragraph>
             {movie.description || 'Описание отсутствует'}
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            Актёры
+          </Typography>
+          <Typography
+            variant="body1"
+            paragraph
+            className="movie-detail__actors"
+          >
+            {actors.length > 0
+              ? actors.join(', ')
+              : 'Информация об актёрах отсутствует'}
           </Typography>
           <Typography variant="h6" gutterBottom>
             Рейтинг
@@ -94,20 +206,15 @@ function MovieDetailPage() {
           <Box className="movie-detail__actions">
             <Button
               variant="outlined"
-              startIcon={<ArrowBackIcon />}
-              onClick={() => navigate(-1)}
-            >
-              Назад
-            </Button>
-            <Button
-              variant="outlined"
-              color={isFavorite ? 'error' : 'primary'}
+              color={isFavoriteLocal ? 'error' : 'primary'}
               startIcon={
-                isFavorite ? <RemoveCircleIcon /> : <FavoriteIcon />
+                isFavoriteLocal ? <RemoveCircleIcon /> : <FavoriteIcon />
               }
+              className="movie-detail__favorite-desktop"
+              disableRipple
               onClick={handleToggleFavorite}
             >
-              {isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+              {isFavoriteLocal ? 'Удалить из избранного' : 'Добавить в избранное'}
             </Button>
             <Button
               variant="outlined"

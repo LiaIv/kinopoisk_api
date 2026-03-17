@@ -1,17 +1,94 @@
+.movie-detail__back {
+  margin-bottom: 16px;
+}
+
+.movie-detail__back-btn {
+  border: 1px solid rgba(144, 202, 249, 0.5) !important;
+  color: #90caf9 !important;
+}
+
+.theme-light .movie-detail__back-btn {
+  background: transparent !important;
+  border: 1px solid rgba(25, 118, 210, 0.48) !important;
+  color: #1565c0 !important;
+}
+
+.theme-light .movie-detail__back-btn:hover {
+  background: transparent !important;
+  border-color: rgba(25, 118, 210, 0.68) !important;
+}
+
 .movie-detail__content {
   display: flex;
   gap: 32px;
 }
 
+.movie-detail__poster-wrap {
+  display: inline-block;
+  position: relative;
+}
+
+.movie-detail__poster-skeleton {
+  border-radius: 8px;
+  height: 450px;
+  inset: 0;
+  position: absolute !important;
+  width: 300px;
+  z-index: 0;
+}
+
 .movie-detail__poster {
   border-radius: 8px;
+  display: block;
   height: auto;
   max-width: 300px;
   object-fit: cover;
+  opacity: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.movie-detail__poster--loaded {
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+.movie-detail__favorite-mobile {
+  background: rgba(20, 17, 27, 0.72) !important;
+  color: #fff !important;
+  display: none !important;
+  position: absolute !important;
+  right: 12px;
+  top: 12px;
+  transition: background-color 0.12s ease, color 0.12s ease,
+    transform 0.18s ease !important;
+  z-index: 3;
+}
+
+.movie-detail__favorite-mobile:hover {
+  background: rgba(20, 17, 27, 0.86) !important;
+}
+
+.movie-detail__favorite-mobile--active {
+  background: rgba(198, 40, 40, 0.9) !important;
+  color: #fff !important;
+}
+
+.movie-detail__favorite-mobile--animating {
+  animation: movie-detail-favorite-pop 0.22s ease-out;
+}
+
+.movie-detail__favorite-desktop {
+  transition: background-color 0.12s ease, border-color 0.12s ease,
+    color 0.12s ease !important;
 }
 
 .movie-detail__info {
   flex: 1;
+}
+
+.movie-detail__actors {
+  line-height: 1.7;
 }
 
 .movie-detail__actions {
@@ -27,20 +104,56 @@
   padding: 48px 0;
 }
 
+@keyframes movie-detail-favorite-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.16);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 @media (max-width: 768px) {
   .movie-detail__content {
-    flex-direction: column;
     align-items: center;
+    flex-direction: column;
   }
 
   .movie-detail__poster {
     max-width: 250px;
   }
+
+  .movie-detail__poster-skeleton {
+    height: 375px;
+    width: 250px;
+  }
+
+  .movie-detail__favorite-desktop {
+    display: none !important;
+  }
+
+  .movie-detail__favorite-mobile {
+    display: inline-flex !important;
+  }
 }
 
 @media (max-width: 480px) {
+  .movie-detail__back {
+    margin-bottom: 12px;
+  }
+
   .movie-detail__poster {
     max-width: 100%;
+  }
+
+  .movie-detail__poster-skeleton {
+    max-width: 100%;
+    width: 100%;
   }
 
   .movie-detail__actions {

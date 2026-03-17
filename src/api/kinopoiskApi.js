@@ -48,3 +48,19 @@ export const getMovieById = async (id, options = {}) => {
 
   return response.json();
 };
+
+export const getMovieStaff = async (id, options = {}) => {
+  const response = await fetch(
+    `${KINOPOISK_BASE_URL}/v1/staff?filmId=${id}`,
+    {
+      headers,
+      ...options,
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Ошибка загрузки информации об актёрах');
+  }
+
+  return response.json();
+};

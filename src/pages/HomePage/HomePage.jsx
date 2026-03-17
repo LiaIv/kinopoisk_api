@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Typography, Box, Button, Paper } from '@mui/material';
-import MovieIcon from '@mui/icons-material/Movie';
-import SearchIcon from '@mui/icons-material/Search';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import InfoIcon from '@mui/icons-material/Info';
+import TheatersRoundedIcon from '@mui/icons-material/TheatersRounded';
+import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import './HomePage.css';
 
@@ -12,22 +12,26 @@ function HomePage() {
 
   const features = [
     {
-      icon: <MovieIcon fontSize="large" />,
+      icon: <TheatersRoundedIcon fontSize="large" />,
+      tone: 'violet',
       title: 'Список фильмов',
       text: 'Просматривайте популярные фильмы с высокими рейтингами',
     },
     {
-      icon: <SearchIcon fontSize="large" />,
+      icon: <ManageSearchRoundedIcon fontSize="large" />,
+      tone: 'blue',
       title: 'Поиск фильмов',
       text: 'Найдите интересующий вас фильм по названию',
     },
     {
-      icon: <FavoriteIcon fontSize="large" />,
+      icon: <FavoriteRoundedIcon fontSize="large" />,
+      tone: 'rose',
       title: 'Избранное',
       text: 'Сохраняйте понравившиеся фильмы для быстрого доступа',
     },
     {
-      icon: <InfoIcon fontSize="large" />,
+      icon: <AutoAwesomeRoundedIcon fontSize="large" />,
+      tone: 'gold',
       title: 'Детальная информация',
       text: 'Узнавайте подробности и рейтинги каждого фильма',
     },
@@ -59,7 +63,11 @@ function HomePage() {
       <Box className="home-features">
         {features.map((feature) => (
           <Paper key={feature.title} className="home-feature-card" elevation={2}>
-            <Box className="home-feature-card__icon">{feature.icon}</Box>
+            <Box
+              className={`home-feature-card__icon home-feature-card__icon--${feature.tone}`}
+            >
+              {feature.icon}
+            </Box>
             <Typography variant="subtitle1" fontWeight={600}>
               {feature.title}
             </Typography>

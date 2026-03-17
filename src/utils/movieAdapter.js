@@ -11,9 +11,19 @@ export const getMoviePoster = (movie) =>
 export const getMovieRating = (movie) =>
   movie?.ratingKinopoisk || movie?.ratingImdb || movie?.rating || null;
 
-export const hasMovieRating = (movie) => {
+export const getMovieRatingValue = (movie) => {
   const rating = getMovieRating(movie);
-  return Boolean(rating && rating !== 'null' && Number(rating) > 0);
+
+  if (rating === null || rating === undefined || rating === 'null') {
+    return 0;
+  }
+
+  const numericRating = Number.parseFloat(String(rating).replace(',', '.'));
+  return Number.isFinite(numericRating) ? numericRating : 0;
+};
+
+export const hasMovieRating = (movie) => {
+  return getMovieRatingValue(movie) > 0;
 };
 
 export const normalizeMovie = (movie) => ({

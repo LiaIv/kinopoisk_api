@@ -34,6 +34,10 @@
 }
 
 .home-feature-card {
+  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(56, 56, 56, 0.95) 0%, rgba(45, 45, 45, 0.94) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 20px !important;
   padding: 24px;
   text-align: center;
   transition: transform 0.2s, box-shadow 0.2s !important;
@@ -44,16 +48,44 @@
   transform: translateY(-4px);
 }
 
+.theme-light .home-feature-card {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border: 1px solid rgba(108, 112, 196, 0.12);
+  box-shadow: 0 12px 28px rgba(114, 124, 168, 0.08) !important;
+}
+
+.theme-light .home-feature-card:hover {
+  background: rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 16px 32px rgba(114, 124, 168, 0.12) !important;
+}
+
 .home-feature-card__icon {
   align-items: center;
-  background: linear-gradient(135deg, #1a1a2e, #0f3460);
-  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   color: #fff;
   display: flex;
   height: 56px;
   justify-content: center;
   margin: 0 auto 12px;
   width: 56px;
+}
+
+.home-feature-card__icon--violet {
+  background: linear-gradient(135deg, rgba(120, 71, 255, 0.34), rgba(72, 28, 140, 0.92));
+}
+
+.home-feature-card__icon--blue {
+  background: linear-gradient(135deg, rgba(78, 164, 255, 0.34), rgba(16, 55, 133, 0.92));
+}
+
+.home-feature-card__icon--rose {
+  background: linear-gradient(135deg, rgba(255, 116, 163, 0.34), rgba(133, 22, 70, 0.92));
+}
+
+.home-feature-card__icon--gold {
+  background: linear-gradient(135deg, rgba(255, 211, 92, 0.34), rgba(145, 90, 13, 0.92));
 }
 
 @media (max-width: 768px) {
